@@ -7,14 +7,15 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 // COMPONENTS
 import Navigation from "./src/navigators/";
 // REDUX
-import { store } from './src/redux/store';
+import { store } from "./src/redux/store";
 
 export default function App() {
-  return (
-    <Provider store={store}>
-      <SafeAreaProvider>
-        <Navigation />
-      </SafeAreaProvider>
-    </Provider>
-  );
-}
+
+    return (
+      <Provider store={store}>
+        <SafeAreaProvider>
+          <Navigation />
+        </SafeAreaProvider>
+      </Provider>
+    );
+  }

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 // FIREBASE CONFIGURATION
@@ -9,8 +9,8 @@ import { firebase } from "../../firebase/config";
 import {
   view,
   userFirstName,
-  verificationId,
   phoneNumber,
+  userObj,
 } from "../../redux/slices/root-slice";
 
 // COMPONENTS
@@ -18,8 +18,9 @@ import FirstNameInput from "../../components/organisms/first-name-input";
 import SubjectShow from "../../components/organisms/subject-show";
 import CanIGetYourNumber from "../../components/organisms/can-i-get-your-number";
 import VerificationCode from "../../components/organisms/verification-code";
+import OpeningScene from "../../components/organisms/opening-scene";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const [verificationCode, setVerificationCode] = React.useState("");
@@ -44,16 +45,41 @@ export default function HomeScreen() {
 
   handleVerificationCodeSubmit = async () => {
     try {
-      console.log("line 47");
-      dispatch(view("LOGGED_IN"));
-
       const credential = firebase.auth.PhoneAuthProvider.credential(
         rootSlice.verificationId,
         verificationCode
       );
+
       await firebase.auth().signInWithCredential(credential);
+      await firebase.auth().currentUser.updateProfile({
+        phoneNumber: rootSlice.phoneNumber,
+        displayName: rootSlice.userFirstName,
+      });
+      const user = firebase.auth().currentUser;
+      console.log("user", user);
+      await firebase
+        .firestore()
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid)
+        .set({
+          uid: firebase.auth().currentUser.uid,
+          createdAt: new Date().getTime(),
+          phoneNumber: rootSlice.phoneNumber,
+          displayName: rootSlice.userFirstName,
+        });
+      console.log("SUCCESS");
+      navigation.navigate("Quiz");
     } catch (err) {
+      console.log("err - line 96", err);
       dispatch(view("PHONE_INPUT"));
+    }
+  };
+
+  handleOpeningSubmit = () => {
+    if (firebase.auth().currentUser) {
+      navigation.navigate("Quiz");
+    } else {
+      dispatch(view("FIRST_NAME"));
     }
   };
 
@@ -64,9 +90,11 @@ export default function HomeScreen() {
   }, [rootSlice.verificationId]);
 
   console.log("rootSlice", rootSlice);
-  console.log("firebase.auth().currentUser", firebase.auth().currentUser);
   return (
     <View style={styles.container}>
+      {rootSlice.view === "INITIAL" && (
+        <OpeningScene onSubmit={handleOpeningSubmit} />
+      )}
       {rootSlice.view === "FIRST_NAME" && (
         <FirstNameInput
           onSubmit={handleFirstNameSubmit}
@@ -85,7 +113,6 @@ export default function HomeScreen() {
           onChange={setVerificationCode}
         />
       )}
-      {rootSlice.view === "LOGGED_IN" && <Text>WE'RE IN!</Text>}
     </View>
   );
 }
@@ -96,14 +123,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
   },
 });

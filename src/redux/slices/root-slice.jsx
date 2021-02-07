@@ -5,12 +5,13 @@ const rootSlice = createSlice({
   name: "rootSlice",
   initialState: {
     rootSlice: {
-      view: firebase.auth().currentUser ? "LOGGED_IN" : "FIRST_NAME",
+      view: "INITIAL",
       attemptInvisibleVerification: true,
       verificationId: "",
       userFirstName: "",
       subject: "Black Holes",
       phoneNumber: "",
+      userObj: {},
     },
   },
   reducers: {
@@ -26,6 +27,9 @@ const rootSlice = createSlice({
     phoneNumber: (state, action) => {
       state.rootSlice.phoneNumber = action.payload;
     },
+    userObj: (state, action) => {
+      state.rootSlice.userObj = action.payload;
+    },
   },
 });
 
@@ -36,4 +40,5 @@ export const {
   verificationId,
   userFirstName,
   phoneNumber,
+  userObj,
 } = rootSlice.actions;

@@ -25,10 +25,6 @@ export default function CanIGetYourNumber({ onChange }) {
     ? firebase.app().options
     : undefined;
 
-  console.log(
-    "rootSlice.attemptInvisibleVerification",
-    rootSlice.attemptInvisibleVerification
-  );
   return (
     <React.Fragment>
       <Text>Hey, in case we get lost. Can I get your number?</Text>
@@ -52,16 +48,14 @@ export default function CanIGetYourNumber({ onChange }) {
         disabled={!rootSlice.phoneNumber}
         onPress={async () => {
           try {
-            console.log("line 52");
             const phoneProvider = new firebase.auth.PhoneAuthProvider();
             const verifyId = await phoneProvider.verifyPhoneNumber(
               rootSlice.phoneNumber,
               recaptchaVerifier.current
             );
-            console.log("verifyId", verifyId);
             dispatch(verificationId(verifyId));
           } catch (err) {
-            console.log("ERRROR", err);
+            console.log("err line 58", err);
             dispatch(view("PHONE_INPUT"));
           }
         }}
