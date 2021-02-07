@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { phoneAuthReducer } from "./slices/phone-auth-slice";
+import { rootSliceReducer } from "./slices/root-slice";
 
 export const store = configureStore({
-  reducer: phoneAuthReducer,
+  reducer: rootSliceReducer,
 });
