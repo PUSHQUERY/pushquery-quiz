@@ -39,39 +39,36 @@ export default function HomeScreen({ navigation }) {
     dispatch(view("PHONE_INPUT"));
   };
 
-  handleNumberChange = (number) => {
-    dispatch(phoneNumber(number));
-  };
-
   handleVerificationCodeSubmit = async () => {
     try {
       const credential = firebase.auth.PhoneAuthProvider.credential(
         rootSlice.verificationId,
         verificationCode
       );
-
+      navigation.navigate("Quiz");
       await firebase.auth().signInWithCredential(credential);
-      await firebase.auth().currentUser.updateProfile({
-        phoneNumber: rootSlice.phoneNumber,
-        displayName: rootSlice.userFirstName,
-      });
-      const user = firebase.auth().currentUser;
-      console.log("user", user);
-      await firebase
+      const storedUser = firebase
         .firestore()
         .collection("users")
-        .doc(firebase.auth().currentUser.uid)
-        .set({
-          uid: firebase.auth().currentUser.uid,
-          createdAt: new Date().getTime(),
-          phoneNumber: rootSlice.phoneNumber,
-          displayName: rootSlice.userFirstName,
-        });
-      console.log("SUCCESS");
-      navigation.navigate("Quiz");
+        .doc(firebase.auth().currentUser.uid);
+      const storedUserDoc = await storedUser.get();
+      if (storedUserDoc.exists) {
+        dispatch(userObj(storedUserDoc.data()));
+        return;
+      } else {
+        await firebase
+          .firestore()
+          .collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .set({
+            uid: firebase.auth().currentUser.uid,
+            createdAt: new Date().getTime(),
+            phoneNumber: rootSlice.phoneNumber,
+            displayName: rootSlice.userFirstName,
+          });
+      }
     } catch (err) {
-      console.log("err - line 96", err);
-      dispatch(view("PHONE_INPUT"));
+      dispatch(view("INITIAL"));
     }
   };
 
@@ -83,13 +80,6 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  React.useMemo(() => {
-    if (rootSlice.verificationId.length) {
-      dispatch(view("VERIFICATION_CODE"));
-    }
-  }, [rootSlice.verificationId]);
-
-  console.log("rootSlice", rootSlice);
   return (
     <View style={styles.container}>
       {rootSlice.view === "INITIAL" && (
@@ -104,9 +94,7 @@ export default function HomeScreen({ navigation }) {
       {rootSlice.view === "SUBJECT" && (
         <SubjectShow onSubmit={handleSubjectSubmit} />
       )}
-      {rootSlice.view === "PHONE_INPUT" && (
-        <CanIGetYourNumber onChange={handleNumberChange} />
-      )}
+      {rootSlice.view === "PHONE_INPUT" && <CanIGetYourNumber />}
       {rootSlice.view === "VERIFICATION_CODE" && (
         <VerificationCode
           onSubmit={handleVerificationCodeSubmit}

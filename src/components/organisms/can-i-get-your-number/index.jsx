@@ -14,10 +14,12 @@ import {
   phoneNumber,
 } from "../../../redux/slices/root-slice";
 
-export default function CanIGetYourNumber({ onChange }) {
+export default function CanIGetYourNumber() {
   const recaptchaVerifier = React.useRef(null);
 
   const dispatch = useDispatch();
+
+  const [number, setNumber] = React.useState("");
 
   const rootSlice = useSelector((state) => state.rootSlice);
 
@@ -41,22 +43,24 @@ export default function CanIGetYourNumber({ onChange }) {
         autoCompleteType='tel'
         keyboardType='phone-pad'
         textContentType='telephoneNumber'
-        onChangeText={(phoneNumber) => onChange(phoneNumber)}
+        onChangeText={(phoneNumber) => setNumber(phoneNumber)}
       />
       <Button
         title='Send'
-        disabled={!rootSlice.phoneNumber}
+        disabled={!number}
         onPress={async () => {
           try {
+            dispatch(phoneNumber(number));
             const phoneProvider = new firebase.auth.PhoneAuthProvider();
             const verifyId = await phoneProvider.verifyPhoneNumber(
-              rootSlice.phoneNumber,
+              number,
               recaptchaVerifier.current
             );
+            setNumber("");
             dispatch(verificationId(verifyId));
+            dispatch(view("VERIFICATION_CODE"));
           } catch (err) {
-            console.log("err line 58", err);
-            dispatch(view("PHONE_INPUT"));
+            dispatch(view("INITIAL"));
           }
         }}
       />
