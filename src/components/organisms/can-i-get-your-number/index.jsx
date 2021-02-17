@@ -11,10 +11,10 @@ import {
   view,
   userFirstName,
   verificationId,
-  phoneNumber,
+  userPhoneNumber,
 } from "../../../redux/slices/root-slice";
 
-export default function CanIGetYourNumber() {
+export default function CanIGetYourNumber({ onChange }) {
   const recaptchaVerifier = React.useRef(null);
 
   const dispatch = useDispatch();
@@ -50,7 +50,7 @@ export default function CanIGetYourNumber() {
         disabled={!number}
         onPress={async () => {
           try {
-            dispatch(phoneNumber(number));
+            dispatch(userPhoneNumber(number));
             const phoneProvider = new firebase.auth.PhoneAuthProvider();
             const verifyId = await phoneProvider.verifyPhoneNumber(
               number,
@@ -60,6 +60,7 @@ export default function CanIGetYourNumber() {
             dispatch(verificationId(verifyId));
             dispatch(view("VERIFICATION_CODE"));
           } catch (err) {
+            console.log('err', err);
             dispatch(view("INITIAL"));
           }
         }}

@@ -6,14 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { firebase } from "../../firebase/config";
 
 // REDUX ACTIONS
-import {
-  view,
-  userFirstName,
-  verificationId,
-  phoneNumber,
-} from "../../redux/slices/root-slice";
+import { view, quiz, loadQuiz } from "../../redux/slices/quiz-slice";
 
 // COMPONENTS
+import Question from "../../components/organisms/question";
 
 export default function QuizScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -24,11 +20,17 @@ export default function QuizScreen({ navigation }) {
     firebase.auth().signOut();
   };
 
-  const rootSlice = useSelector((state) => state.rootSlice);
+  const state = useSelector((state) => state);
+  const quizSlice = useSelector((state) => state.quizSlice);
 
+  React.useEffect(() => {
+    dispatch(loadQuiz());
+  }, []);
+  console.log('quizSlice', quizSlice);
+  console.log("state", state);
   return (
     <View style={styles.container}>
-      {rootSlice.view === "LOGGED_IN" && <Text>WE'RE IN!</Text>}
+      {/* {rootSlice.view === "LOGGED_IN" && <Text>WE'RE IN!</Text>} */}
       <TouchableOpacity
         onPress={handleSignOut}
         style={{
