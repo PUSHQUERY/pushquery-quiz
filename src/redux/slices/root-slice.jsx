@@ -3,9 +3,9 @@ import { firebase } from "../../firebase/config";
 
 export const submitVerificationCode = createAsyncThunk(
   "root/submitPhoneNumber",
-  async (_, { dispatch, getState }) => {
-    console.log("line 7 - root");
+  async ({ navigation }, { dispatch, getState }) => {
     const { rootSlice } = getState();
+    navigation.navigate("Quiz");
     dispatch(view("QUIZ_LOADING"));
     const credential = firebase.auth.PhoneAuthProvider.credential(
       rootSlice.verificationId,
@@ -90,16 +90,11 @@ const rootSlice = createSlice({
     },
   },
   extraReducers: {
-    [loginCheck.fulfilled]: (state, action) => {
-      // state.errorMsg = action;
-      // state.view = "QUIZ_LOADING";
-    },
     [loginCheck.rejected]: (state, action) => {
       state.view = "NAME";
       state.errorMsg = action.error.message;
     },
     [submitVerificationCode.fulfilled]: (state, action) => {
-      state.errorMsg = action;
       state.view = "QUIZ_LOADING";
       state.userObj = action.payload;
     },

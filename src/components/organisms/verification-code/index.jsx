@@ -4,7 +4,6 @@ import { TextInput, Text, Button } from "react-native";
 
 export default function VerificationCode({ onSubmit, onChange }) {
   const rootSlice = useSelector((state) => state.rootSlice);
-  console.log('rootSlice.verificationId', rootSlice.verificationId);
   return (
     <>
       <Text style={{ marginTop: 20 }}>

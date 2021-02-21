@@ -6,16 +6,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { firebase } from "../../firebase/config";
 
 // REDUX ACTIONS
-import { view, quiz, loadQuiz } from "../../redux/slices/quiz-slice";
+import {
+  view,
+  handleQuestionAnswer,
+  loadQuiz,
+} from "../../redux/slices/quiz-slice";
 
 // COMPONENTS
 import Question from "../../components/organisms/question";
+import Results from "../../components/organisms/results";
+import Membership from "../../components/organisms/membership";
+import NextQuizIs from "../../components/organisms/next-quiz-is";
 
 export default function QuizScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const handleSignOut = () => {
-    dispatch(view("FIRST_NAME"));
+    dispatch(view("INITIAL"));
     navigation.navigate("Home");
     firebase.auth().signOut();
   };
@@ -24,13 +31,18 @@ export default function QuizScreen({ navigation }) {
   const quizSlice = useSelector((state) => state.quizSlice);
 
   React.useEffect(() => {
-    dispatch(loadQuiz());
-  }, []);
-  console.log('quizSlice', quizSlice);
+    if (quizSlice.quiz.length === 0) {
+      dispatch(loadQuiz());
+    }
+  }, [quizSlice]);
+  console.log("quizSlice", quizSlice);
   console.log("state", state);
   return (
     <View style={styles.container}>
-      {/* {rootSlice.view === "LOGGED_IN" && <Text>WE'RE IN!</Text>} */}
+      {quizSlice.view === "QUIZ_LOADING" && <Question />}
+      {quizSlice.view === "MEMBERSHIP" && <Membership />}
+      {quizSlice.view === "RESULTS" && <Results />}
+      {quizSlice.view === "NEXT_QUIZ_IS" && <NextQuizIs />}
       <TouchableOpacity
         onPress={handleSignOut}
         style={{

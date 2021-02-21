@@ -2,9 +2,6 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
-// FIREBASE CONFIGURATION
-import { firebase } from "../../firebase/config";
-
 // REDUX ACTIONS
 import {
   view,
@@ -19,10 +16,8 @@ import {
 
 // COMPONENTS
 import FirstNameInput from "../../components/organisms/first-name-input";
-import SubjectShow from "../../components/organisms/subject-show";
 import CanIGetYourNumber from "../../components/organisms/can-i-get-your-number";
 import VerificationCode from "../../components/organisms/verification-code";
-import OpeningScene from "../../components/organisms/opening-scene";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -51,7 +46,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const submitCode = () => {
-    dispatch(submitVerificationCode());
+    dispatch(submitVerificationCode({ navigation }));
   };
 
   const setRecaptcha = (recaptchaVerifier) => {
@@ -81,10 +76,7 @@ export default function HomeScreen({ navigation }) {
         />
       )}
       {rootSlice.view === "VERIFICATION_CODE" && (
-        <VerificationCode
-          onSubmit={submitCode}
-          onChange={setCode}
-        />
+        <VerificationCode onSubmit={submitCode} onChange={setCode} />
       )}
     </View>
   );
