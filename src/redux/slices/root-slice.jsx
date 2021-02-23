@@ -3,9 +3,8 @@ import { firebase } from "../../firebase/config";
 
 export const submitVerificationCode = createAsyncThunk(
   "root/submitPhoneNumber",
-  async ({ navigation }, { dispatch, getState }) => {
+  async (_, { dispatch, getState }) => {
     const { rootSlice } = getState();
-    navigation.navigate("Quiz");
     dispatch(view("QUIZ_LOADING"));
     const credential = firebase.auth.PhoneAuthProvider.credential(
       rootSlice.verificationId,
@@ -42,16 +41,20 @@ export const submitVerificationCode = createAsyncThunk(
 
 export const loginCheck = createAsyncThunk(
   "root/loginCheck",
-  async (_, { dispatch, getState }) => {
+  async (_, { dispatch }) => {
     if (firebase.auth().currentUser) {
+      // USER IS LOGGED IN
       dispatch(view("QUIZ_LOADING"));
       const userRef = firebase
         .firestore()
         .collection("users")
         .doc(firebase.auth().currentUser.uid);
       const user = await userRef.get();
-      return user.data();
+      if (user) {
+        dispatch(userObj(user.data()));
+      }
     } else {
+      // USER IS NOT LOGGED IN
       dispatch(view("NAME"));
     }
   }
@@ -91,7 +94,7 @@ const rootSlice = createSlice({
   },
   extraReducers: {
     [loginCheck.rejected]: (state, action) => {
-      state.view = "NAME";
+      state.view = "INITIAL";
       state.errorMsg = action.error.message;
     },
     [submitVerificationCode.fulfilled]: (state, action) => {

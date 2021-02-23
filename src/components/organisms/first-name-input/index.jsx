@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TextInput } from "react-native";
+import { Text, TextInput, Button } from "react-native";
 import { useSelector } from "react-redux";
 
 export default function FirstNameInput({ onSubmit, onChange }) {
@@ -19,6 +19,11 @@ export default function FirstNameInput({ onSubmit, onChange }) {
         autoFocus
         autoCapitalize={"words"}
         onSubmitEditing={onSubmit}
+      />
+      <Button
+        title='Send'
+        disabled={!rootSlice.userFirstName}
+        onPress={onSubmit}
       />
     </React.Fragment>
   );
