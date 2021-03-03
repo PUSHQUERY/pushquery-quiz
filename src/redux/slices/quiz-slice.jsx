@@ -86,7 +86,7 @@ const quizSlice = createSlice({
     },
     [loadQuiz.fulfilled]: (state, { payload }) => {
       state.quiz = payload;
-      state.view = "QUIZ_LOADING";
+      // state.view = "QUIZ_LOADING";
     },
     [loadQuiz.rejected]: (state, action) => {
       state.status = "failed";

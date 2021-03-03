@@ -6,10 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   view,
   userFirstName,
-  userPhoneNumber,
   setVerificationCode,
   loginCheck,
-  submitPhoneNumber,
   userRecaptchaVerifier,
   submitVerificationCode,
 } from "../../redux/slices/root-slice";
@@ -22,23 +20,15 @@ import VerificationCode from "../../components/organisms/verification-code";
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
 
-  const state = useSelector((state) => state);
   const rootSlice = useSelector((state) => state.rootSlice);
+  const current_view = useSelector((state) => state.rootSlice.view);
 
   const handleFirstNameChange = (firstName) => {
     dispatch(userFirstName(firstName));
   };
 
   const handleFirstNameSubmit = () => {
-    dispatch(view("PHONE_INPUT"));
-  };
-
-  const handlePhoneNumberSubmit = () => {
-    dispatch(submitPhoneNumber());
-  };
-
-  const setPhoneNumberCode = (phoneNumber) => {
-    dispatch(userPhoneNumber(phoneNumber));
+    dispatch(view("PHONE_NUMBER"));
   };
 
   const setCode = (code) => {
@@ -54,32 +44,27 @@ export default function HomeScreen({ navigation }) {
   };
 
   React.useEffect(() => {
-    if (state.rootSlice.view === "INITIAL") {
+    if (rootSlice.view === "INITIAL") {
       dispatch(loginCheck());
     }
   }, []);
 
-  console.log("state.rootSlice", state.rootSlice);
-  return (
-    <View style={styles.container}>
-      {rootSlice.view === "NAME" && (
-        <FirstNameInput
-          onSubmit={handleFirstNameSubmit}
-          onChange={handleFirstNameChange}
-        />
-      )}
-      {rootSlice.view === "PHONE_INPUT" && (
-        <CanIGetYourNumber
-          onSubmit={handlePhoneNumberSubmit}
-          onChange={setPhoneNumberCode}
-          setRecaptcha={setRecaptcha}
-        />
-      )}
-      {rootSlice.view === "VERIFICATION_CODE" && (
-        <VerificationCode onSubmit={submitCode} onChange={setCode} />
-      )}
-    </View>
-  );
+  console.log('Date.now() - 1614703800', Date.now() - 1614703800000 < 1800);
+  console.log("rootSlice", rootSlice);
+  const VIEW_STATE = {
+    NAME: (
+      <FirstNameInput
+        onSubmit={handleFirstNameSubmit}
+        onChange={handleFirstNameChange}
+      />
+    ),
+    PHONE_NUMBER: <CanIGetYourNumber setRecaptcha={setRecaptcha} />,
+    VERIFICATION_CODE: (
+      <VerificationCode onSubmit={submitCode} onChange={setCode} />
+    ),
+  };
+
+  return <View style={styles.container}>{VIEW_STATE[current_view]}</View>;
 }
 
 // STYLE SHEET

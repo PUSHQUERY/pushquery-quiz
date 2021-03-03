@@ -27,6 +27,22 @@ export default function CanIGetYourNumber({ onChange }) {
     ? firebase.app().options
     : undefined;
 
+    const submitPhoneNumber = async () => {
+      try {
+        dispatch(userPhoneNumber(number));
+        const phoneProvider = new firebase.auth.PhoneAuthProvider();
+        const verifyId = await phoneProvider.verifyPhoneNumber(
+          number,
+          recaptchaVerifier.current
+        );
+        setNumber("");
+        dispatch(verificationId(verifyId));
+        dispatch(view("VERIFICATION_CODE"));
+      } catch (err) {
+        console.log('err', err);
+        dispatch(view("INITIAL"));
+      }
+    }
   return (
     <React.Fragment>
       <Text>Hey, in case we get lost. Can I get your number?</Text>
@@ -48,22 +64,7 @@ export default function CanIGetYourNumber({ onChange }) {
       <Button
         title='Send'
         disabled={!number}
-        onPress={async () => {
-          try {
-            dispatch(userPhoneNumber(number));
-            const phoneProvider = new firebase.auth.PhoneAuthProvider();
-            const verifyId = await phoneProvider.verifyPhoneNumber(
-              number,
-              recaptchaVerifier.current
-            );
-            setNumber("");
-            dispatch(verificationId(verifyId));
-            dispatch(view("VERIFICATION_CODE"));
-          } catch (err) {
-            console.log('err', err);
-            dispatch(view("INITIAL"));
-          }
-        }}
+        onPress={submitPhoneNumber}
       />
     </React.Fragment>
   );
