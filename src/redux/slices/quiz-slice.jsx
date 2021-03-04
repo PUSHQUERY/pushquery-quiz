@@ -6,7 +6,7 @@ export const loadQuiz = createAsyncThunk("quiz/loadQuiz", async () => {
     const quiz = firebase.firestore().collection("quizes").doc("20210207");
     const storedQuiz = await quiz.get();
     if (storedQuiz.exists) {
-      return storedQuiz.data()?.questions;
+      return storedQuiz.data();
     }
   } catch (error) {
     return error;

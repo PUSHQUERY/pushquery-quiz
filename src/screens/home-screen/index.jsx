@@ -7,6 +7,7 @@ import {
   view,
   userFirstName,
   setVerificationCode,
+  loadQuiz,
   loginCheck,
   userRecaptchaVerifier,
   submitVerificationCode,
@@ -16,6 +17,7 @@ import {
 import FirstNameInput from "../../components/organisms/first-name-input";
 import CanIGetYourNumber from "../../components/organisms/can-i-get-your-number";
 import VerificationCode from "../../components/organisms/verification-code";
+import QuizCountdown from '../../components/organisms/quiz-countdown';
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -49,7 +51,7 @@ export default function HomeScreen({ navigation }) {
     }
   }, []);
 
-  console.log('Date.now() - 1614703800', Date.now() - 1614703800000 < 1800);
+  // console.log('Date.now() - 1614703800', Date.now() - 1614703800000 < 1800);
   console.log("rootSlice", rootSlice);
   const VIEW_STATE = {
     NAME: (
@@ -62,6 +64,7 @@ export default function HomeScreen({ navigation }) {
     VERIFICATION_CODE: (
       <VerificationCode onSubmit={submitCode} onChange={setCode} />
     ),
+    QUIZ_COUNTDOWN: <QuizCountdown />,
   };
 
   return <View style={styles.container}>{VIEW_STATE[current_view]}</View>;

@@ -30,13 +30,12 @@ export default function QuizScreen({ navigation }) {
   const state = useSelector((state) => state);
   const quizSlice = useSelector((state) => state.quizSlice);
 
-  React.useEffect(() => {
-    if (quizSlice.quiz.length === 0) {
-      dispatch(loadQuiz());
-    }
-  }, [quizSlice]);
-  console.log("quizSlice", quizSlice);
-  console.log("state", state);
+  // React.useEffect(() => {
+  //   if (quizSlice.quiz.length === 0) {
+  //     dispatch(loadQuiz());
+  //   }
+  // }, [quizSlice]);
+
   return (
     <View style={styles.container}>
       {quizSlice.view === "QUIZ_LOADING" && <Question />}
